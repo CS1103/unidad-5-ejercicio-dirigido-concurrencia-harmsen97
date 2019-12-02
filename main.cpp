@@ -4,6 +4,11 @@
 #include <string>
 #include <fstream>
 
+int numRow=0;
+int sizeA;
+
+std::vector<double> vec1;
+
 
 template <class T>
 class Matrix{
@@ -17,50 +22,79 @@ public:
         rows=_rows;
         cols=_cols;
 
-        m = new int*[rows];
+        m = new T*[rows];
         for(int i = 0; i < rows; i++)
             m[i] = new T[cols];
+
+        sizeA=cols*rows;
     }
 
     Matrix(std::string path) {
 
+        numRow++;
+
         T numb;
-        std::vector<T> vec1;
 
         std::ifstream file1;
         file1.open(path);
 
         int cont = 0;
-        while (file1 >> numb) {
-            if (cont == 0)
-                rows = numb;
-            if (cont == 1) {
-                cols = numb;
-                m = new T *[rows];
-                for (int i = 0; i < rows; i++)
-                    m[i] = new T[cols];
-            }
-            if (cont > 1) {
-                vec1.push_back(numb);
+
+        if(numRow==1){
+            while (file1 >> numb) {
+                if (cont == 0)
+                    rows = numb;
+                if (cont == 1) {
+                    cols = numb;
+                    m = new T *[rows];
+                    for (int i = 0; i < rows; i++)
+                        m[i] = new T[cols];
+                }
+                if (cont > 1) {
+                    vec1.push_back(numb);
+                }
+
+                cont++;
             }
 
-            cont++;
-        }
-        int k = 0;
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                m[i][j] = vec1[k];
-                k++;
+
+            int k = 0;
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    m[i][j] = vec1[k];
+                    k++;
+                }
             }
+
+            sizeA=cols*rows;
+        }
+
+        if(numRow==2){
+
+            rows=vec1[0+sizeA];
+            cols=vec1[1+sizeA];
+
+            std::cout<<"rows: "<<rows<<std::endl;
+            std::cout<<"cols: "<<cols<<std::endl;
+            m = new T *[rows];
+            for (int i = 0; i < rows; i++)
+                m[i] = new T[cols];
+
+            int k = 2;
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    m[i][j]=vec1[k+sizeA];
+                    k++;
+                }
+            }
+
         }
 
         file1.close();
 
     }
 
-
-
-    int** getMatrix(){
+    T** getMatrix(){
         return m;
     }
 
@@ -103,14 +137,14 @@ public:
 
 int main(){
 
-    Matrix<int> m1 = Matrix<int>("file1.txt");
-    Matrix<int> m2 = Matrix<int>("file2.txt");
+    Matrix<float> m1 = Matrix<float>("test.txt");
+    Matrix<float> m2 = Matrix<float>("test.txt");
 
     m1.printMatrix();
     m2.printMatrix();
 
 
-    Matrix<int> product = m1*m2;
+    Matrix<float> product = m1*m2;
     product.printMatrix();
 
 
